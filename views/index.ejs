@@ -1,0 +1,14 @@
+<%- include('partials/header', { title: 'Listado de Formularios' }) %>
+    <div class="container">
+        <h1>Formularios Creados</h1>
+        <a href="/new-form" class="btn btn-primary">Crear Nuevo Formulario</a>
+        <ul class="list-group mt-3">
+            <% forms.forEach(form => { %>
+                <li class="list-group-item">
+                    <a href="<%= form.url %>"><%= form.name %></a>
+                    <a href="/view-data/<%= form.name %>" class="btn btn-info btn-sm ml-3">Ver Datos</a>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+    <%- include('partials/footer') %>

@@ -1,0 +1,12 @@
+{
+  "Nuevo formulario": [
+    {
+      "campo1": "nombre",
+      "campo2": "nombre@email.com"
+    },
+    {
+      "campo1": "nombre 2",
+      "campo2": "email@dos.es"
+    }
+  ]
+}

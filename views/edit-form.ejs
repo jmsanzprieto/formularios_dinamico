@@ -1,0 +1,119 @@
+<%- include('partials/header', { title: `Editar ${form.name}` }) %>
+
+<h1>Editar Formulario: <%= form.name %></h1>
+
+<form action="/edit-form/<%= form.name %>" method="POST" id="form-editor">
+    <div class="form-group">
+        <label for="formName">Nombre del Formulario</label>
+        <input type="text" class="form-control" id="formName" name="formName" value="<%= form.name %>" required>
+    </div>
+
+    <div class="form-group" id="existingFields">
+        <label>Campos Actuales</label>
+        <% form.fields.forEach((field, index) => { %>
+            <div class="existing-field mb-2">
+                <input type="hidden" name="existingFieldNames[]" value="<%= field.name %>">
+                <label><%= field.label %></label>
+                <button type="button" class="btn btn-sm btn-danger ml-2 delete-field">Eliminar</button>
+            </div>
+        <% }) %>
+    </div>
+
+    <hr>
+
+    <div class="form-group" id="newFields">
+        <label>Añadir Nuevo Campo</label>
+        <div class="new-field mb-3">
+            <input type="text" class="form-control mb-1" placeholder="Nombre del Campo" name="newFieldName[]">
+            <input type="text" class="form-control mb-1" placeholder="Etiqueta del Campo" name="newFieldLabel[]">
+            <select class="form-control mb-2" name="newFieldType[]">
+                <option value="text">Texto</option>
+                <option value="number">Número</option>
+                <option value="email">Email</option>
+                <option value="date">Fecha</option>
+                <!-- Agregar más tipos de campo según sea necesario -->
+            </select>
+            <button type="button" class="btn btn-sm btn-secondary delete-new-field">Eliminar</button>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-secondary" id="addFieldBtn">Añadir Campo</button>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>
+
+<%- include('partials/footer') %>
+
+<script>
+    $(document).ready(function() {
+        // Eliminar campo existente
+        $('#existingFields').on('click', '.delete-field', function() {
+            $(this).closest('.existing-field').remove();
+        });
+
+        // Eliminar campo nuevo
+        $('#newFields').on('click', '.delete-new-field', function() {
+            $(this).closest('.new-field').remove();
+        });
+
+        // Añadir campo nuevo
+        $('#addFieldBtn').click(function() {
+            const newField = `
+                <div class="new-field mb-3">
+                    <input type="text" class="form-control mb-1" placeholder="Nombre del Campo" name="newFieldName[]">
+                    <input type="text" class="form-control mb-1" placeholder="Etiqueta del Campo" name="newFieldLabel[]">
+                    <select class="form-control mb-2" name="newFieldType[]">
+                        <option value="text">Texto</option>
+                        <option value="number">Número</option>
+                        <option value="email">Email</option>
+                        <option value="date">Fecha</option>
+                        <!-- Agregar más tipos de campo según sea necesario -->
+                    </select>
+                    <button type="button" class="btn btn-sm btn-secondary delete-new-field">Eliminar</button>
+                </div>`;
+            $('#newFields').append(newField);
+        });
+
+        // Manejar la submisión del formulario
+        $('#form-editor').submit(function() {
+            // Construir la lista de campos existentes para enviar al servidor
+            const existingFieldNames = [];
+            $('.existing-field input[name="existingFieldNames[]"]').each(function() {
+                existingFieldNames.push($(this).val());
+            });
+
+            // Construir la lista de campos nuevos para enviar al servidor
+            const newFieldNames = [];
+            const newFieldLabels = [];
+            const newFieldTypes = [];
+            $('.new-field').each(function() {
+                const fieldName = $(this).find('input[name="newFieldName[]"]').val();
+                const fieldLabel = $(this).find('input[name="newFieldLabel[]"]').val();
+                const fieldType = $(this).find('select[name="newFieldType[]"]').val();
+                if (fieldName && fieldLabel && fieldType) {
+                    newFieldNames.push(fieldName);
+                    newFieldLabels.push(fieldLabel);
+                    newFieldTypes.push(fieldType);
+                }
+            });
+
+            // Añadir campos al formulario antes de enviar
+            existingFieldNames.forEach(function(fieldName) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'fields[]',
+                    value: JSON.stringify({ name: fieldName, label: '', type: '' })
+                }).appendTo('#form-editor');
+            });
+
+            newFieldNames.forEach(function(fieldName, index) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'fields[]',
+                    value: JSON.stringify({ name: fieldName, label: newFieldLabels[index], type: newFieldTypes[index] })
+                }).appendTo('#form-editor');
+            });
+
+            return true; // Permitir el envío del formulario
+        });
+    });
+</script>

@@ -1,0 +1,14 @@
+<%- include('partials/header', { title: form.name }) %>
+
+<h1><%= form.name %></h1>
+<form action="/form/<%= form.name %>" method="POST">
+    <% form.fields.forEach(field => { %>
+        <div class="form-group">
+            <label for="<%= field.name %>"><%= field.label %></label>
+            <input type="<%= field.type %>" class="form-control" id="<%= field.name %>" name="<%= field.name %>" required>
+        </div>
+    <% }) %>
+    <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
+
+<%- include('partials/footer') %>

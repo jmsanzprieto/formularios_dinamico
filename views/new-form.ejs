@@ -1,0 +1,71 @@
+<%- include('partials/header', { title: 'Nuevo Formulario' }) %>
+
+<h1>Crear Nuevo Formulario</h1>
+<form action="/new-form" method="POST" id="form-creator">
+    <div class="form-group">
+        <label for="formName">Nombre del Formulario</label>
+        <input type="text" class="form-control" id="formName" name="formName" required>
+    </div>
+
+    <div class="form-group">
+        <label for="fieldName">Nombre del Campo</label>
+        <input type="text" class="form-control" id="fieldName" name="fieldName">
+    </div>
+    
+    <div class="form-group">
+        <label for="fieldLabel">Etiqueta del Campo</label>
+        <input type="text" class="form-control" id="fieldLabel" name="fieldLabel">
+    </div>
+
+    <div class="form-group">
+        <label for="fieldType">Tipo de Campo</label>
+        <select class="form-control" id="fieldType" name="fieldType">
+            <option value="text">Texto</option>
+            <option value="number">Número</option>
+            <option value="email">Email</option>
+            <option value="date">Fecha</option>
+            <option value="textarea">Textarea</option>
+            <option value="password">Contraseña</option>
+            <!-- Agregar más tipos de campo según sea necesario -->
+        </select>
+    </div>
+
+    <button type="button" class="btn btn-secondary" id="addFieldBtn">Añadir Campo</button>
+
+    <div class="form-group mt-3">
+        <label for="fields">Campos Añadidos</label>
+        <ul class="list-group" id="fieldsList"></ul>
+        <input type="hidden" id="fields" name="fields">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Crear Formulario</button>
+</form>
+
+<%- include('partials/footer') %>
+
+<script>
+    $(document).ready(function() {
+        $('#addFieldBtn').click(function() {
+            const fieldName = $('#fieldName').val();
+            const fieldLabel = $('#fieldLabel').val();
+            const fieldType = $('#fieldType').val();
+
+            if (fieldName && fieldLabel && fieldType) {
+                const fieldsList = $('#fieldsList');
+                const newField = $('<li>').addClass('list-group-item').text(`Nombre: ${fieldName}, Etiqueta: ${fieldLabel}, Tipo: ${fieldType}`);
+                fieldsList.append(newField);
+
+                const fieldsInput = $('#fields');
+                const currentFields = fieldsInput.val() ? JSON.parse(fieldsInput.val()) : [];
+                currentFields.push({ name: fieldName, label: fieldLabel, type: fieldType });
+                fieldsInput.val(JSON.stringify(currentFields));
+
+                $('#fieldName').val('');
+                $('#fieldLabel').val('');
+                $('#fieldType').val('text');
+            } else {
+                alert('Por favor, ingrese un nombre, etiqueta y seleccione un tipo para el campo.');
+            }
+        });
+    });
+</script>
